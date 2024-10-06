@@ -1,0 +1,1 @@
+# Modelo de treinamento para KNN em Assembly MIPS
