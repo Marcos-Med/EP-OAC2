@@ -1,7 +1,7 @@
 .data 
 const: .double 999999999.9999
 buffer:             .space 256        # Buffer para leitura de linhas
-k: .word 2                 # k = número de vizinhos
+k: .word 6                 # k = número de vizinhos
 h: .word 1                 # h = até quantos dias depois se deseja prever
 w: .word 3                 # w = números de dias que basea a análise
 contador_linha:     .word 0 #número de linhas do arquivo original
@@ -343,9 +343,9 @@ main:
  	 	sll $t7, $t5, 3
  	 	add $t7, $t7, $t9
  	 	s.d $f2, 0($t7)
- 	 	add $t4, $zero, $zero
  	 	move $t6, $s0
  	 	bubble_sort:
+ 	 	        add $t4, $zero, $zero
  	 		subi $t6, $t6, 1
  	 		beq $t6, $zero, return
  	 	sort_loop:
