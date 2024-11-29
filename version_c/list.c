@@ -10,7 +10,7 @@ LIST_DATA * createList(){ //Cria uma lista vazia
     return list;
 }
 
-Node * createNode(int value){ //Cria um nó da lista
+Node * createNode(double value){ //Cria um nó da lista
     Node * node;
     node = (Node *) malloc(sizeof(Node));
     node->next = NULL;
@@ -21,10 +21,15 @@ Node * createNode(int value){ //Cria um nó da lista
 void appendNode(Node* node, LIST_DATA* list){
     if(node == NULL || list == NULL) return; //Inserção inválida
     Node* it = list->head;
-    while(it->next){ //Insere no final da lista
-        it = it->next;
+    if(!it) {
+        list->head = node;
     }
-    it->next = node;
+    else{
+        while(it->next){ //Insere no final da lista
+            it = it->next;
+        }
+        it->next = node;
+    }
     list->length++; //Incrementa o tamanho da lista
 }
 

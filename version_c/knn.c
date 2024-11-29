@@ -4,25 +4,25 @@
 #include "ML.h"
 #include "list.h"
 
-typedef struct 
-{
-    int* positions;
-    int length;
-} list_positions; //Estrutura de dados auxiliar
-
-
-bool split_data(LIST_DATA* data, double** x, double* y, int* lines_data, int w, int h){
-    bool flag = (!data) || (!x) || (!y) || (w == 0) || (h == 0);
-    if(flag) return false; 
+bool split_data(LIST_DATA* data, double*** x, double** y, int* lines_data, int w, int h){
+    bool flag = (!data) || (w == 0) || (h == 0);
+    if(flag) return false;
     int lines = data->length - w - h + 1; //Número de linhas
+    (*lines_data) = lines;
+    (*x) = (double**) malloc(lines*sizeof(double*));
+    (*y) = (double*) malloc(lines*sizeof(double));
+    for(int i = 0; i < lines; i++){
+        (*x)[i] = (double*) malloc(w*sizeof(double));
+    }
     for(int i = 0; i < lines; i++){
         Node* node = getInit(i, data);
         for(int j = 0; j < w; j++){
-             x[i][j] = node->value;
-             node->next;
+            (*x)[i][j] = node->value;
+            node = node->next;
         }
-        int posY = i + w + h - 1 //Dia da previsão y[i]
-        y[posY] = getInit(posY, data)->value;
+        int posY = i + w + h - 1; //Dia da previsão y[i]
+        node = getInit(posY, data);
+        (*y)[i] = node->value;
     }
     return true;
 }
@@ -38,35 +38,37 @@ Node* getInit(int i, LIST_DATA* list){ //Encontra o dado inicial
 }
 
 double* knn(double** x_train, double* y_train, double** x_test, int lines_train, int lines_test, int w, int k){
-    double* dist = (double*) malloc(lines_train * sizeof(double));
-    double* result = (double*) malloc(lines_test*sizeof(double));
-    list_positions* list = (list_positions*) malloc(sizeof(list_positions));
+    double* dist = (double*) malloc(lines_train * sizeof(double)); //vetor de distância
+    double* result = (double*) malloc(lines_test*sizeof(double)); //y_pred
+    list_positions* list = (list_positions*) malloc(sizeof(list_positions)); //estrutura de dados auxiliar
     list->length = 0;
     list->positions = (int*) malloc(sizeof(int) * k);
     for(int i = 0; i < lines_test; i++){
         for(int j = 0; j < lines_train; j++){
-            dist[j] = calc_dist(x_train[j], x_test[i], w);
+            dist[j] = calc_dist(x_train[j], x_test[i], w); //Calcula a distância
         }
         for(int j = 0; j < k; j++){
             double menor = dist[0];
             int index = 0;
             for(int z = 0; z < lines_train; z++){
-                if(menor > dist[z] && (!isHere(z, list))){
+                if((menor > dist[z]) && (!isHere(z, list))){ //Encontra o vizinho mais próximo
                     index = z;
                     menor = dist[z];
                 }
             }
             list->positions[j] = index;
-            list->length++;
+            list->length++; //Mais um vizinho
         }
         result[i] = 0;
         for(int j = 0; j < list->length; j++){
             result[i] += y_train[list->positions[j]];
         }
-        result[i] = result[i]/k;
+        result[i] = result[i]/k; //Realizar a previsão através da média
         list->length = 0;
     }
-    
+    free(list->positions);
+    free(list);
+    free(dist);
     return result;
 
 }

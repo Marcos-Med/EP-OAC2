@@ -1,24 +1,25 @@
-//Definação da Lista Ligada dos dados de entrada
-
+#ifndef LIST_H
+#define LIST_H
 typedef struct node
 {
-    int value;
+    double value;
     struct node * next;
 } Node;
-
-typedef struct
+   
+typedef struct 
 {
+    Node* head;
     int length;
-    Node * head;
 
 } LIST_DATA;
 
-LIST_DATA * createList();
+LIST_DATA* createList();
 
-Node * createNode(int value);
+Node* createNode(double value);
 
 void appendNode(Node* node, LIST_DATA* list);
 
 void deleteNode(Node* node);
 
 void deleteList(LIST_DATA* list);
+#endif
