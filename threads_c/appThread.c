@@ -15,17 +15,20 @@ FILE* getFile(char* file_path); //Abre um arquivo
 int main(){
 
     printf("-- KNN para prever o IBOVESPA --\n");
-    LIST_DATA* list_train = getData("../x_train.txt"); //Lista ligada Train
-    LIST_DATA* list_test = getData("../x_test.txt"); //Lista ligada Test
+    LIST_DATA* list_train = getData("dados_xtrain.txt"); //Lista ligada Train
     int k = 0;
     int w = 0;
     int h = 0;
+    char file_test[100];
     printf("Digite o parametro K: ");
     scanf("%d", &k);
     printf("Digite o parametro W: ");
     scanf("%d", &w);
     printf("Digite o parametro H: ");
     scanf("%d", &h);
+    printf("Digite o nome do arquivo teste: ");
+    scanf("%s", file_test);
+    LIST_DATA* list_test = getData(file_test); //Lista ligada Test
     double start_time = omp_get_wtime();
     if((k <= 0) || (w <= 0) || (h <= 0)){
         printf("Parametros invalidos!\n");
