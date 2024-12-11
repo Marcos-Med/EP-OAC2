@@ -12,19 +12,19 @@ FILE* getFile(char* file_path);
 
 int main(){
     printf("-- KNN para prever o IBOVESPA --\n");
-    FILE* file_train = getFile("../x_train.txt");
+    FILE* file_train = getFile("../x_train.txt"); //Dados de treino
     if(file_train == NULL){
         printf("Erro ao ler o arquivo de treino!\n");
         return 1;
     }
-    LIST_DATA* list_train = getData(file_train);
+    LIST_DATA* list_train = getData(file_train); //Lista ligada Train
     fclose(file_train);
-    FILE* file_test = getFile("../x_test.txt");
+    FILE* file_test = getFile("../x_test.txt"); //Dados de teste
     if(file_test == NULL){
         printf("Erro ao ler o arquivo de teste!\n");
         return 1;
     }
-    LIST_DATA* list_test = getData(file_test);
+    LIST_DATA* list_test = getData(file_test); //Lista ligada Test
     fclose(file_test);
     int k = 0;
     int w = 0;
