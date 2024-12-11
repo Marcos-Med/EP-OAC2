@@ -3,6 +3,7 @@
 #include <direct.h>
 #include "list.h"
 #include "ML.h"
+#include <time.h>
 
 LIST_DATA* getData(FILE* file);
 
@@ -35,6 +36,7 @@ int main(){
     scanf("%d", &w);
     printf("Digite o parametro H: ");
     scanf("%d", &h);
+    clock_t start_time = clock();
     if((k <= 0) || (w <= 0) || (h <= 0)){
         printf("Parametros invalidos!\n");
         return 1;
@@ -48,6 +50,9 @@ int main(){
     int lines_test = 0;
     if(!split_data(list_test, &x_test, &y_test, &lines_test, w, h)) return 1;
     double* y_pred = knn(x_train, y_train, x_test, lines_train, lines_test, w, k);
+    clock_t end_time = clock();
+    double cpu_time_used = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+    printf("Tempo de execucao: %.6f segundos\n", cpu_time_used);
     if(!writeFile("y_test.txt", y_test, lines_test)){
         printf("Erro ao escrever no arquivo!\n");
         return 1;
