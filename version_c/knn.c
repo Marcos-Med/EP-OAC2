@@ -4,7 +4,7 @@
 #include "ML.h"
 #include "list.h"
 
-bool split_data(LIST_DATA* data, double*** x, double** y, int* lines_data, int w, int h){
+bool split_data(LIST_DATA* data, double*** x, double** y, int* lines_data, int w, int h){ //Treina o modelo
     bool flag = (!data) || (w == 0) || (h == 0);
     if(flag) return false;
     int lines = data->length - w - h + 1; //Número de linhas
@@ -15,13 +15,13 @@ bool split_data(LIST_DATA* data, double*** x, double** y, int* lines_data, int w
         (*x)[i] = (double*) malloc(w*sizeof(double));
     }
     for(int i = 0; i < lines; i++){
-        Node* node = getInit(i, data);
+        Node* node = getInit(i, data); //Busca o valor inicial da linha da matriz X
         for(int j = 0; j < w; j++){
             (*x)[i][j] = node->value;
             node = node->next;
         }
         int posY = i + w + h - 1; //Dia da previsão y[i]
-        node = getInit(posY, data);
+        node = getInit(posY, data); //Busca a previsão
         (*y)[i] = node->value;
     }
     return true;
@@ -37,7 +37,7 @@ Node* getInit(int i, LIST_DATA* list){ //Encontra o dado inicial
     return node;
 }
 
-double* knn(double** x_train, double* y_train, double** x_test, int lines_train, int lines_test, int w, int k){
+double* knn(double** x_train, double* y_train, double** x_test, int lines_train, int lines_test, int w, int k){ //Regressão
     double* dist = (double*) malloc(lines_train * sizeof(double)); //vetor de distância
     double* result = (double*) malloc(lines_test*sizeof(double)); //y_pred
     list_positions* list = (list_positions*) malloc(sizeof(list_positions)); //estrutura de dados auxiliar

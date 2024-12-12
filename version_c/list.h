@@ -13,13 +13,13 @@ typedef struct
 
 } LIST_DATA;
 
-LIST_DATA* createList();
+LIST_DATA* createList(); //Cria lista
 
-Node* createNode(double value);
+Node* createNode(double value); //Cria Nó
 
-void appendNode(Node* node, LIST_DATA* list);
+void appendNode(Node* node, LIST_DATA* list); //Insere Nó
 
-void deleteNode(Node* node);
+void deleteNode(Node* node); //Deleta Nó
 
-void deleteList(LIST_DATA* list);
+void deleteList(LIST_DATA* list); //Deleta lista
 #endif

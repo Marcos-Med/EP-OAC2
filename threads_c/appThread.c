@@ -37,15 +37,18 @@ int main(){
     double** x_train = NULL;
     double* y_train = NULL;
     int lines_train = 0;
-    if(!split_data(list_train, &x_train, &y_train, &lines_train, w, h)) return 1;
+    //Treina o modelo
+    if(!split_data(list_train, &x_train, &y_train, &lines_train, w, h)) return 1; 
     double** x_test = NULL;
     double* y_test = NULL;
     int lines_test = 0;
     if(!split_data(list_test, &x_test, &y_test, &lines_test, w, h)) return 1;
+    //Realiza a regressão
     double* y_pred = knn(x_train, y_train, x_test, lines_train, lines_test, w, k);
     double end_time = omp_get_wtime();
     double elapsed_time = end_time - start_time;
     printf("Tempo de execucao: %.6f segundos\n", elapsed_time);
+    //Escrita no arquivo
     if(!writeFile("y_test.txt", y_test, lines_test)){
         printf("Erro ao escrever no arquivo!\n");
         return 1;
@@ -68,7 +71,7 @@ int main(){
     return 0;
 }
 
-FILE* getFile(char* file_path){
+FILE* getFile(char* file_path){ //Abre o arquivo
     FILE* file = fopen(file_path, "r");
     return file;
 }
@@ -82,39 +85,41 @@ LIST_DATA* getData(char* file_path){
     fclose(file);
     long block_size = size_file / NUM_THREADS;
 
-    LIST_DATA* list = createList();
+    LIST_DATA* list = createList(); //Lista global
     int tam_list = 0;
-    Node* nodes[NUM_THREADS*2 - 2];
-    Node* init;
+    Node* nodes[NUM_THREADS*2 - 2]; //estrutura auxiliar para concatenar as listas locais
+    Node* init; //Nó cabeça
     #pragma omp parallel reduction(+:tam_list) num_threads(NUM_THREADS)
     {
-        int thread_id = omp_get_thread_num();
-        long start = thread_id * block_size;
-        long end = (thread_id < NUM_THREADS - 1) ? start + block_size - 10 : size_file;
+        int thread_id = omp_get_thread_num(); 
+        long start = thread_id * block_size; //início do bloco
+        long end = (thread_id < NUM_THREADS - 1) ? start + block_size - 10 : size_file; //fim do bloco
         char buffer[256];
         FILE* fDATA = getFile(file_path);
         fseek(fDATA, start, SEEK_SET);
         LIST_DATA* list_local = createList();
         Node* node;
-        while(ftell(fDATA) < end && fgets(buffer, sizeof(buffer), fDATA)){
+        while(ftell(fDATA) < end && fgets(buffer, sizeof(buffer), fDATA)){ //enquanto há trecho do bloco
             char* endPtr;
             double value = strtod(buffer, &endPtr);
             node = createNode(value);
-            appendNode(node, list_local);
+            appendNode(node, list_local); //insere o dado na lista local
         }
         fclose(fDATA);
         tam_list = list_local->length;
         if(thread_id == 0) {
-            nodes[thread_id] = node;
+            nodes[thread_id] = node; //fim da lista local
             init = list_local->head;
         }
-        else if(thread_id == NUM_THREADS - 1) nodes[thread_id*2 - 1] = list_local->head;
+        else if(thread_id == NUM_THREADS - 1) nodes[thread_id*2 - 1] = list_local->head; //começo da lista local
         else{
+            //Threads pares -> fim da lista
+            //Threads ímpares -> início da lista
             nodes[thread_id*2 - 1] = list_local->head;
             nodes[thread_id*2] = node;
         }
     }
-    for(int i = 0; i < (NUM_THREADS*2-3); i+=2){
+    for(int i = 0; i < (NUM_THREADS*2-3); i+=2){ //Concatena-se as listas
         Node* a = nodes[i];
         a->next = nodes[i+1];
     }
@@ -123,7 +128,7 @@ LIST_DATA* getData(char* file_path){
     return list;
 }
 
-bool writeFile(char* file_path, double* data, int lines){
+bool writeFile(char* file_path, double* data, int lines){ //Escreve no arquivo
     FILE* file = fopen(file_path, "w");
     if(file == NULL) return false;
     for(int i = 0; i < lines; i++){

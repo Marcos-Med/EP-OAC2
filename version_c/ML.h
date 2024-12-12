@@ -13,11 +13,11 @@ typedef struct
     int length;
 } list_positions; //Estrutura de dados auxiliar
 
-double calc_dist(double* x_train, double* x_test, int w);
+double calc_dist(double* x_train, double* x_test, int w); //Calcula distância euclidiana
 
-bool isHere(int i, list_positions* list);
+bool isHere(int i, list_positions* list); //Verifica se o vizinho foi escolhido
 
-Node* getInit(int i, LIST_DATA* list);
+Node* getInit(int i, LIST_DATA* list); //Devolve o dado
 
 bool split_data(LIST_DATA* data, double*** x, double** y, int* lines, int w, int h); //Divide o conjunto de treino e teste conforme w e h
 

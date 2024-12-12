@@ -5,7 +5,7 @@
 #include "../version_c/list.h"
 #include "threads.h"
 
-bool split_data(LIST_DATA* data, double*** x, double** y, int* lines_data, int w, int h){
+bool split_data(LIST_DATA* data, double*** x, double** y, int* lines_data, int w, int h){ //Treina o modelo
     bool flag = (!data) || (w == 0) || (h == 0);
     if(flag) return false;
     int lines = data->length - w - h + 1; //Número de linhas
@@ -17,13 +17,13 @@ bool split_data(LIST_DATA* data, double*** x, double** y, int* lines_data, int w
     }
     #pragma omp parallel for num_threads(NUM_THREADS)
     for(int i = 0; i < lines; i++){
-        Node* node = getInit(i, data);
-        for(int j = 0; j < w; j++){
+        Node* node = getInit(i, data); //Busca o ínicio da linha da matriz X
+        for(int j = 0; j < w; j++){ //Gera a matriz X
             (*x)[i][j] = node->value;
             node = node->next;
         }
         int posY = i + w + h - 1; //Dia da previsão y[i]
-        node = getInit(posY, data);
+        node = getInit(posY, data); //Busca a previsão
         (*y)[i] = node->value;
     }
     return true;
@@ -39,7 +39,7 @@ Node* getInit(int i, LIST_DATA* list){ //Encontra o dado inicial
     return node;
 }
 
-double* knn(double** x_train, double* y_train, double** x_test, int lines_train, int lines_test, int w, int k){
+double* knn(double** x_train, double* y_train, double** x_test, int lines_train, int lines_test, int w, int k){ //Realiza a regressão
     double* result = (double*) malloc(lines_test*sizeof(double)); //y_pred
     #pragma omp parallel for num_threads(NUM_THREADS)
     for(int i = 0; i < lines_test; i++){
